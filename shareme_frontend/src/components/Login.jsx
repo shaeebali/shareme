@@ -1,22 +1,33 @@
-import React from 'react';
-import GoogleLogin from 'react-google-login';
+
+// import GoogleLogin from 'react-google-login';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import { GoogleLogin } from '@react-oauth/google';
+import { useGoogleLogin } from '@react-oauth/google';
 import { useNavigate } from 'react-router-dom';
 import { FcGoogle } from 'react-icons/fc';
 import shareVideo from '../assets/share.mp4';
 import logo from '../assets/logowhite.png';
+import jwt_decode from "jwt-decode";
 
-import {client} from '../client';
+import { client } from '../client';
 
 const Login = () => {
   const navigate = useNavigate();
   const responseGoogle = (response) => {
-    localStorage.setItem('user', JSON.stringify(response.profileObj));
-    const { name, googleId, imageUrl } = response.profileObj;
+    //console.log(response);
+    let decoded = jwt_decode(response.credential)
+    //console.log(decoded);
+    localStorage.setItem('user', JSON.stringify(decoded));
+    const { name, picture } = decoded;
+    const { client_id } = response;
+    /* console.log(name);
+    console.log(client_id);
+    console.log(picture); */
     const doc = {
-      _id: googleId,
+      _id: client_id,
       _type: 'user',
       userName: name,
-      image: imageUrl,
+      image: picture,
     };
     client.createIfNotExists(doc).then(() => {
       navigate('/', { replace: true });
@@ -24,6 +35,7 @@ const Login = () => {
   };
 
   return (
+    <GoogleOAuthProvider clientId={`${process.env.REACT_APP_GOOGLE_API_TOKEN}`}>
     <div className="flex justify-start items-center flex-col h-screen">
       <div className=" relative w-full h-full">
         <video
@@ -42,8 +54,8 @@ const Login = () => {
           </div>
 
           <div className="shadow-2xl">
-            <GoogleLogin
-              clientId={`${process.env.REACT_APP_GOOGLE_API_TOKEN}`}
+            {/* <GoogleLogin
+             
               render={(renderProps) => (
                 <button
                   type="button"
@@ -55,13 +67,22 @@ const Login = () => {
                 </button>
               )}
               onSuccess={responseGoogle}
-              onFailure={responseGoogle}
+              onError={responseGoogle}
               cookiePolicy="single_host_origin"
-            />
+            /> */}
+            <GoogleLogin className="bg-mainColor flex justify-center items-center p-3 rounded-lg cursor-pointer outline-none"
+              onSuccess={credentialResponse => {
+                responseGoogle(credentialResponse);
+              }}
+              onError={() => {
+                console.log('Login Failed');
+              }}
+            />;
           </div>
         </div>
       </div>
     </div>
+  </GoogleOAuthProvider> 
   );
 };
 
