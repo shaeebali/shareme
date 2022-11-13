@@ -52,7 +52,7 @@ const Login = () => {
             <img src={logo} width="130px" />
           </div>
 
-          <div className="shadow-2xl">
+          <div className="shadow-2xl bg-mainColor flex justify-center items-center p-3 rounded-lg cursor-pointer outline-none">
             {/* <GoogleLogin
              
               render={(renderProps) => (

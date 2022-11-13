@@ -6,7 +6,7 @@ import Home from './container/Home';
 
 const App = () => {
   return (
-   <GoogleOAuthProvider clientId={`${process.env.REACT_APP_GOOGLE_API_TOKEN}`} >   
+   <GoogleOAuthProvider clientId={`${process.env.REACT_APP_GOOGLE_API_TOKEN}`} >  
     <Routes>
         <Route path="login" element={<Login />} /> //Login component
         <Route path="/*" element={<Home />} />     //Home component 
